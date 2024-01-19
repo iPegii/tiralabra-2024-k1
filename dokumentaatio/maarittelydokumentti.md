@@ -6,6 +6,8 @@ Opinto-ohjelma: TKT
 Ohjelmointikieli: Python
 Vertaisarvioitavat kielet: Python ja Java
 
+Dokumentointi kieli: suomi
+
 
 ## Projektin tavoite
 
