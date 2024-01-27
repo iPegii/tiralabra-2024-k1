@@ -13,23 +13,22 @@ Dokumentointi kieli: suomi
 
 Algoritmit ja tietorakenteet: 
 * A* 
-* Jump Point Research
 * IDA* 
 
 ### Toiminnallisuus
 
-* Lyhin reitti labyrintissa
+* Lyhin reitti kartassa kahden pisteen välillä
     * Reitti näytetään graafisesti
-    * Käyttäjä voi luoda esteitä
+    * ~~Käyttäjä voi luoda esteitä~~
 * Tulosten näyttäminen
     * Näytä minkä ajan eri algoritmit saivat
     * Näytä ajamisen jälkeen miten algoritmit etenivät (yhtäaikaa)
 
 
 Ohjelma saa syötteenä:
-* Soluja joiden läpi voi kullea
-* Soluja joiden läpi ei voi kulkea
-Lisäkehitys-ideoita:
-* Soluja joiden läpi menee nopeammin
-* Soluja joiden läpi menee hitaammin
+* Solmuja joista voi edetä
+* ~~Soluja joiden läpi ei voi kulkea~~
+~~Lisäkehitys-ideoita:~~
+* ~~Soluja joiden läpi menee nopeammin~~
+* ~~Soluja joiden läpi menee hitaammin~~
 
