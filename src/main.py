@@ -1,16 +1,30 @@
 import heapq
+import math
 import osmnx as ox
+import networkx as nx
 
 
 def main():
     graph = get_graph()
     # processed_map = process_map(graph)
-    draw_map(graph)
+    graph = ox.speed.add_edge_speeds(graph)
+    graph = ox.speed.add_edge_travel_times(graph)
+    print(list(graph.nodes))
+    #print(list(graph.edges))
+
+    first_node = 25435275
+    second_node = 262987538
+    print("------------")
+    print(graph[262987538])
+
+    a_star(first_node, second_node, graph)
+
+    #  draw_map(graph)
 
 
 
 def get_graph():
-    graph = ox.graph_from_place('Helsinki', network_type='drive')
+    graph = ox.graph_from_place('Kallio, Helsinki', network_type='drive')
     return graph
 
 def process_map(graph):
@@ -37,42 +51,43 @@ def reconstruct_path(came_from, current):
         total_path.append(current)
     return total_path
 
-def a_star(start, goal, h):
+def a_star(start, goal, graph):
     """Parametrit:
     start = aloituspiste, josta algoritmi aloittaa matkan
     goal = päätöspiste, johon algoritmilla halutaan päästä
     h = algoritmin heuristinen osuus, joka laskee jokaisen solmun hinnan 
     """
 
-    #open_set sisältää tiedetyt solmut, joita voi laajentaa
-    open_set = [start]
+    # (Paino, mikä solmu)
+    visited =  {}
+    distance = {}
 
-    came_from = []
+    for node in list(graph.nodes):
+        visited[node] = False
+        distance[node] = math.inf
 
-    currently_cheapest_to_n = []
-    currently_cheapest_to_n[start] = 0
+    heap = []
+    starting_node = (0,start)
 
-    forecasted_cheapest_path =[]
-    forecasted_cheapest_path[start] = h(start)
+    heapq.heappush(heap,starting_node)
+    while len(heap) > 0:
+        node = heap.pop()[1]
+        if visited[node]:
+            continue
+        visited[node] = True
+        for edge in graph[node]:
+            print("Edge:")
+            travel_time = graph[node][edge][0]["travel_time"]
+            print(f"First node : {node}")
+            print(f"Second node : {edge}")
 
-    while len(open_set) > 0:
-        current = heapq.nsmallest(1, open_set, key=None)
-        if current == goal:
-            return reconstruct_path(came_from, current)
-
-        open_set.remove(current)
-        for neighbour in current:
-            weight_to_neighbour = 1 # but here weight between them
-         #   """Distance from start -> current -> neighbour"""
-            distance_to_neighbour = currently_cheapest_to_n[current] + weight_to_neighbour
-            if distance_to_neighbour < currently_cheapest_to_n[neighbour]:
-                came_from[neighbour] = current
-                currently_cheapest_to_n[neighbour] = forecasted_cheapest_path
-                forecasted_cheapest_path[neighbour] = forecasted_cheapest_path + h(neighbour)
-                if neighbour not in open_set:
-                    heapq.heappush(open_set, (neighbour))
-
-    return False
+            going_to = edge
+            current = distance[going_to]
+            new = distance[edge]+travel_time
+            print(f"New : {new} smaller than {current}")
+            if new < current:
+                distance[going_to] = new
+                heapq.heappush(heap,(new,edge.to))
 
 
 
