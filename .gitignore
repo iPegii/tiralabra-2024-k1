@@ -1,3 +1,5 @@
 src/data/planet.osm.gz
 .venv/
 cache
+images/
+__pycache__
