@@ -1,6 +1,6 @@
 import heapq
-import math
 import random
+import math
 import osmnx as ox
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -11,18 +11,20 @@ def main():
     first_node = random.choice(list(graph.nodes))
     second_node = random.choice(list(graph.nodes))
 
-    distances = a_star(first_node, second_node, graph)
-    loop_point = second_node
-    route = []
-    while loop_point is not first_node:
-        if distances[loop_point] == loop_point:
-            break
-        previous_node = distances[loop_point]
-        route.append(previous_node)
-        loop_point = previous_node
+    route_to_goal = a_star(first_node, second_node, graph)
+
+    print(route_to_goal)
 
     route = nx.shortest_path(graph, source=first_node, target=second_node,
     weight='time_travel', method='dijkstra')
+    print(f"A-star route length: {len(route_to_goal)}")
+    print(f"A-star route: {route_to_goal}")
+    print("")
+    print("-------------------------")
+    print("")
+    print(f"djikstra route length: {len(route)}")
+    print(f"djikstra route: {route}")
+
 
 
     color_list = ['green', 'green', 'green', 'green', 'red',
@@ -74,6 +76,36 @@ def reconstruct_path(came_from, current):
         total_path.append(current)
     return total_path
 
+class Node:
+    def __init__(self, distance, number, prev_route):
+        """
+        distance: Int
+        number: Int
+        prev_route: Int[]
+        """
+        self.distance = distance # etäisyys tähän nodeen asti
+        self.number = number # Osoite
+        self.prev_route = prev_route # Pidetään lista reitistä tälle nodelle asti
+    def __str__(self):
+        str = ""
+        for i in self.prev_route:
+            print(i)
+            if(len(str) == 0):
+                str = f"{i}"
+            str += f"--> {i}"
+        return str
+    def __lt__(self, other):
+        return self.distance < other.distance
+    
+def euclidean_distance(graph, first_node, second_node):
+    first_lon = graph.nodes[first_node]["x"] # pituusaste
+    first_lat = graph.nodes[first_node]["y"] # leveysaste
+
+    second_lon = graph.nodes[second_node]["x"] # pituusaste
+    second_lat = graph.nodes[second_node]["y"] # leveysaste
+
+    return math.sqrt((second_lon - first_lon)**2 + (second_lat - first_lat)**2)
+
 def a_star(start, goal, graph):
     """Parametrit:
     start = aloituspiste, josta algoritmi aloittaa matkan
@@ -81,44 +113,47 @@ def a_star(start, goal, graph):
     h = algoritmin heuristinen osuus, joka laskee jokaisen solmun hinnan 
     """
 
-    # (Paino, mikä solmu)
-    visited =  {}
-    distance = {}
-    prev = {}
-    for node in list(graph.nodes):
-        if node == start:
-            distance[node] = 0
-            visited[node] = False
-            prev[node] = 0
+    openList =  []
+    closedList = {}
+
+    starting_node = Node(0,start,[start])
+
+    heapq.heappush(openList,starting_node)
+   # print(f"testing {graph[start]['2037356632']}")
+    while len(openList) > 0:
+
+        node = heapq.heappop(openList)
+        if closedList.get(node.number):
             continue
-        visited[node] = False
-        distance[node] = math.inf
-        prev[node] = -1
+        if node.number == goal:
+            print("goal")
+            return node.prev_route
+        print("suicks: ", graph)
+        for child_node in graph[node.number]:
+            print("child_node: ", child_node)
+            print("testing: ", graph.nodes[node.number]['x'])
+            travel_time = graph[node.number][child_node][0]["travel_time"]
+            new_node = None
+            new_route = node.prev_route + [child_node]
+            if closedList.get(child_node) is not None:
+                # Jos closedList sisältää jo noden niin katsotaan onko nykyinen reitti nopeampi
 
-    heap = []
-    starting_node = (0,start)
+                current_distance_to_child = closedList.get(child_node).distance
+                euclidean_distance_to_goal = euclidean_distance(graph,child_node,goal)
 
-    heapq.heappush(heap,starting_node)
-    while len(heap) > 0:
+                new_distance_to_child = node.distance + travel_time + euclidean_distance_to_goal
 
-        node = heapq.heappop(heap)[1]
-        if visited[node]:
-            continue
-        visited[node] = True
-        for edge in graph[node]:
-            travel_time = graph[node][edge][0]["travel_time"]
-            going_to = edge
-            current = distance[going_to]
-            new = None
-            if math.isinf(distance[node]):
-                new = travel_time
+                if new_distance_to_child < current_distance_to_child:
+                    new_route = node.prev_route + [child_node]
+                    new_node = Node(new_distance_to_child,child_node,new_route)
+                else:
+                    continue
             else:
-                new = distance[node]+travel_time
-            if new < current:
-                distance[going_to] = new
-                heapq.heappush(heap,(new,going_to))
-                prev[going_to] = node
-    return prev
+                new_distance_to_child = node.distance+travel_time
+                new_node = Node(new_distance_to_child,child_node,new_route)
+            heapq.heappush(openList,new_node)
+        closedList[node.number] = node
+    
 
 def get_nearest_node(graph,marker):
     nearest_node = ox.nearest_nodes(graph, X=marker.location, Y=marker.location)
