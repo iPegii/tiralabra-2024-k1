@@ -128,10 +128,8 @@ def a_star(start, goal, graph):
         if node.number == goal:
             print("goal")
             return node.prev_route
-        print("suicks: ", graph)
         for child_node in graph[node.number]:
             print("child_node: ", child_node)
-            print("testing: ", graph.nodes[node.number]['x'])
             travel_time = graph[node.number][child_node][0]["travel_time"]
             new_node = None
             new_route = node.prev_route + [child_node]
