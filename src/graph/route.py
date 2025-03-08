@@ -18,7 +18,7 @@ def get_image_path(param):
 
 
 def get_list_of_nodes(graph):
-    return list(graph.nodes)
+    return graph.nodes
 
 def get_graph():
     graph = ox.graph_from_point((60.1704,24.9412), dist=1000, network_type='drive')
@@ -26,33 +26,8 @@ def get_graph():
     graph = ox.speed.add_edge_travel_times(graph)
     return graph
 
-def process_map(graph):
-    """
-    Yhdistetään risteyksien solmuja. Risteyksissä voi olla jokaista suuntaa kohden yksi solmu,
-    joka johtaa siihen että 4 suunnan risteyksestä voi tulla yhteensä 8 
-    vaikka suuntia pitäisi olla 4 ja solmuja 1.
-
-    Yhdistämme risteyksien solmut, jotka ovat 15m päässä toisistaan.
-    """
-
-    map_with_intersections_merged = ox.consolidate_intersections(
-        graph, tolerance=10, rebuild_graph=True, dead_ends=True,reconnect_edges=True)
-    return map_with_intersections_merged
-
-
 def draw_map(graph):
     ox.plot_graph(graph)
-
-def reconstruct_path(came_from, current):
-    total_path = current
-    while current in came_from.keys():
-        current = came_from[current]
-        total_path.append(current)
-    return total_path
-
-def get_nearest_node(graph,marker):
-    nearest_node = ox.nearest_nodes(graph, X=marker.location, Y=marker.location)
-    return nearest_node
 
 def show_route(graph,route, route_name):
     color_list = ['green', 'green', 'green', 'green', 'red',

@@ -6,8 +6,7 @@ from graph.route import get_graph, show_route
 
 def main():
     graph = get_graph()
-    print(graph.nodes['298368071'])
-
+    print(graph.nodes)
     first_node = random.choice(list(graph.nodes))
     second_node = random.choice(list(graph.nodes))
 
