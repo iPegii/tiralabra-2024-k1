@@ -1,6 +1,5 @@
 import math
 import heapq
-import math
 
 class Node:
     def __init__(self, distance, number, prev_route):
@@ -24,6 +23,8 @@ class Node:
         return self.distance < other.distance
     
 def euclidean_distance(graph, first_node, second_node):
+    # Todo: voitaisiin ottaa huomioon myös matkanopeus(?)
+
     first_lon = graph.nodes[first_node]["x"] # pituusaste
     first_lat = graph.nodes[first_node]["y"] # leveysaste
 
