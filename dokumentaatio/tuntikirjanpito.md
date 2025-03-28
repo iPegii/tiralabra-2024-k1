@@ -8,3 +8,5 @@
 | 08.03. | 1        | Refaktorointia ja testien tekoa                                            |
 | 10.03. | 3        | Paremmin kustomoitava graafin haku ja reitin keston laskeminen helpommaksi |
 | 17.03. | 2        | IDA\* toteutusta aloitettu                                                 |
+| 28.03. | 4.5        | IDA\* korjattu ja otettu käyttöön reitin piirtämisessä                                                 |
+
